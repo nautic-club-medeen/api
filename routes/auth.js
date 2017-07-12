@@ -21,7 +21,7 @@ var auth = {
       if (user) {
         bcrypt.compare(password, user.password, function(err, resp) {
           if (resp) {
-              res.json(genToken());
+              res.json(genToken(user));
           } else {
             res.status(401);
             res.json({
@@ -40,22 +40,21 @@ var auth = {
     });
   },
 
-  validateUser: function(username) {
-    // spoofing the DB response for simplicity
-    var dbUserObj = { // spoofing a userobject from the DB.
-      name: 'arvind',
-      role: 'admin',
-      username: 'arvind@myapp.com'
-    };
-
-    return dbUserObj;
-  },
+  validateUser: function(email) {
+    return new Promise((resolve, reject) => {
+      UserModel.findOne({ 'email':  email}, function (err, user) {
+          if (err) reject(err);
+          resolve(user);
+      })
+    });
+  }
 }
 
 // private method
-function genToken() {
+function genToken(user) {
   var expires = expiresIn(7); // 7 days
   var token = jwt.encode({
+    user: user,
     exp: expires
   }, require('../config/secret')());
 

@@ -1,8 +1,7 @@
-// grab the things we need
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
+var mongoosePaginate = require('mongoose-paginate');
 
-// create a schema
 var userSchema = new Schema({
   firstName: { type: String, required: true },
   lastName: { type: String, required: true },
@@ -11,10 +10,9 @@ var userSchema = new Schema({
   admin: { type: Boolean, default: false },
   created_at: { type: Date, default: Date.now }
 });
+userSchema.plugin(mongoosePaginate);
 
-// the schema is useless so far
-// we need to create a model using it
+
 var User = mongoose.model('User', userSchema);
 
-// make this available to our users in our Node applications
 module.exports = User;
